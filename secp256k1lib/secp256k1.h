@@ -1,13 +1,38 @@
 #ifndef _HOST_SECP256K1_H
 #define _HOST_SECP256K1_H
 
-#include<stdio.h>
-#include<stdint.h>
-#include<string.h>
-#include<string>
-#include<vector>
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+#include <string>
+#include <vector>
+#include <random>
 
 namespace secp256k1 {
+
+	class Random
+	{
+		std::random_device rd;
+		std::mt19937* gen;
+		std::uniform_int_distribution<unsigned int>* distr;
+
+	public:
+
+		Random()
+		{
+			gen = new std::mt19937(rd());
+			distr = new std::uniform_int_distribution<unsigned int>(0, 0xffffffff);
+		}
+
+		unsigned int getChunk() {
+			return (*distr)(*gen);
+		}
+
+		~Random() {
+			delete gen;
+			delete distr;
+		}
+	};
 
 	class uint256 {
 
@@ -60,7 +85,7 @@ namespace secp256k1 {
 			memset(this->v, 0, sizeof(uint32_t) * 8);
 
 			int j = 0;
-			for(int i = len - 8; i >= 0; i-= 8) {
+			for(int i = len - 8; i >= 0; i -= 8) {
 				std::string sub = t.substr(i, 8);
 				uint32_t val;
 				if(sscanf(sub.c_str(), "%x", &val) != 1) {
@@ -256,6 +281,19 @@ namespace secp256k1 {
 			return (this->v[n / 32] & (0x1 << (n % 32))) != 0;
 		}
 
+		int getBitRange()
+		{
+			int ret = 0;
+			for(int n = 255; n >= 0; n--) {
+				if(bit(n)) {
+					ret = n + 1;
+					break;
+				}
+			}
+
+			return ret;
+		}
+
 		bool isEven()
 		{
 			return (this->v[0] & 1) == 0;
@@ -268,6 +306,9 @@ namespace secp256k1 {
             return ((uint64_t)this->v[1] << 32) | v[0];
         }
 	};
+
+	static Random rnd;
+	uint256 getRandomRange(uint256 min, uint256 max);
 
 	const unsigned int _POINT_AT_INFINITY_WORDS[8] = { 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF };
 	const unsigned int _P_WORDS[8] = { 0xFFFFFC2F, 0xFFFFFFFE, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF };

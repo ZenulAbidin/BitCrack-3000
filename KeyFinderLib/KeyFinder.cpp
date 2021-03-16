@@ -18,7 +18,7 @@ void KeyFinder::defaultStatusCallback(KeySearchStatus status)
 	// Do nothing
 }
 
-KeyFinder::KeyFinder(const secp256k1::uint256 &startKey, const secp256k1::uint256 &endKey, int compression, KeySearchDevice* device, const secp256k1::uint256 &stride)
+KeyFinder::KeyFinder(const secp256k1::uint256 &startKey, const secp256k1::uint256 &endKey, int compression, KeySearchDevice* device, const secp256k1::uint256 &stride, bool randomMode)
 {
 	_total = 0;
 	_statusInterval = 1000;
@@ -37,6 +37,8 @@ KeyFinder::KeyFinder(const secp256k1::uint256 &startKey, const secp256k1::uint25
     _iterCount = 0;
 
     _stride = stride;
+
+	_randomMode = randomMode;
 }
 
 KeyFinder::~KeyFinder()
@@ -136,7 +138,7 @@ void KeyFinder::init()
 {
 	Logger::log(LogLevel::Info, "Initializing " + _device->getDeviceName());
 
-    _device->init(_startKey, _compression, _stride);
+	_device->init(_startKey, _endKey, _compression, _stride, _randomMode);
 }
 
 
@@ -244,8 +246,8 @@ void KeyFinder::run()
         }
 
 		// Stop if we searched the entire range
-        if(_device->getNextKey().cmp(_endKey) >= 0 || _device->getNextKey().cmp(_startKey) < 0) {
-            Logger::log(LogLevel::Info, "Reached end of keyspace");
+		if(!_randomMode && (_device->getNextKey().cmp(_endKey) >= 0 || _device->getNextKey().cmp(_startKey) < 0)) {
+			Logger::log(LogLevel::Info, "Reached end of keyspace");
             _running = false;
         }
 	}
