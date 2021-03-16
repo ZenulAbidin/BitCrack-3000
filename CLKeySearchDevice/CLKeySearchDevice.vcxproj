@@ -105,7 +105,7 @@ $(SolutionDir)\tools\embedcl.exe bitcrack.cl bitcrack_cl.cpp _bitcrack_cl</Comma
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\KeyFinderLib;$(SolutionDir)\clUtil;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.2\include;$(SolutionDir)\secp256k1lib;$(SolutionDir)\Logger;$(SolutionDir)\util;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\KeyFinderLib;$(SolutionDir)\clUtil;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include;$(SolutionDir)\secp256k1lib;$(SolutionDir)\Logger;$(SolutionDir)\util;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <PreBuildEvent>
@@ -141,7 +141,7 @@ $(SolutionDir)\tools\embedcl.exe bitcrack.cl bitcrack_cl.cpp _bitcrack_cl</Comma
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\KeyFinderLib;$(SolutionDir)\clUtil;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.2\include;$(SolutionDir)\secp256k1lib;$(SolutionDir)\Logger;$(SolutionDir)\util;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\KeyFinderLib;$(SolutionDir)\clUtil;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include;$(SolutionDir)\secp256k1lib;$(SolutionDir)\Logger;$(SolutionDir)\util;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
