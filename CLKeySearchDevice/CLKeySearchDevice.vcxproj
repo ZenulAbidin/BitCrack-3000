@@ -128,7 +128,7 @@ $(SolutionDir)\tools\embedcl.exe bitcrack.cl bitcrack_cl.cpp _bitcrack_cl</Comma
       </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>type ripemd160.cl secp256k1.cl sha256.cl keysearch.cl &gt; bitcrack.cl
+      <Command>type ..\clMath\ripemd160.cl ..\clMath\secp256k1.cl ..\clMath\sha256.cl keysearch.cl &gt; bitcrack.cl
 $(SolutionDir)\tools\embedcl.exe bitcrack.cl bitcrack_cl.cpp _bitcrack_cl</Command>
       <Message>Embed bitcrack.cl into bitcrack_cl.cpp</Message>
     </PreBuildEvent>
