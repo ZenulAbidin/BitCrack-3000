@@ -2,6 +2,7 @@
 
 A tool for brute-forcing Bitcoin private keys. The main purpose of this project is to contribute to the effort of solving the [Bitcoin puzzle transaction](https://blockchain.info/tx/08389f34c98c606322740c0be6a7125d9860bb8d5cb182c02f98461e5fa6cd15): A transaction with 32 addresses that become increasingly difficult to crack.
 
+This is a patched version by NotATether which fixes the "Misaligned Address" error on RTX 20 and 30 cards by completely disabling cicc optimization, though with a huge performance hit for the CUDA version. This build of Bitcrack runs at about 60 MKey/s on NVIDIA Tesla T4.
 
 ### Using BitCrack
 
@@ -155,6 +156,8 @@ Note: By default the NVIDIA OpenCL headers are used. You can set the header and 
 OpenCL in the `BitCrack.props` property sheet.
 
 ### Building in Linux
+
+If compiling with CUDA, The Linux Makefile will automatically detect the compute capabilities of all NVIDIA GPUs present on the system it's building on, and build the appropriate kernels for all of them. To override this behavior, manually set the compute capability using `make BUILD_CUDA=1 COMPUTE_CAP=<comma-separated list of versions without periods>`.
 
 Using `make`:
 

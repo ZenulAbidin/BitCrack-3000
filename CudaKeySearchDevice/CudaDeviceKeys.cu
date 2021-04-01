@@ -101,6 +101,7 @@ cudaError_t CudaDeviceKeys::allocateChainBuf(unsigned int count)
 	cudaError_t err = cudaMalloc(&_devChain, count * sizeof(unsigned int) * 8);
 
 	if(err) {
+		printf("cudadevicekeys allocatechainbuf: cudaMalloc devChain error!");
 		return err;
 	}
 
@@ -127,11 +128,13 @@ cudaError_t CudaDeviceKeys::initializeBasePoints()
 	cudaError_t err = cudaMalloc(&_devBasePointX, sizeof(unsigned int) * count * 8);
 
 	if(err) {
+		printf("cudadevicekeys initializebasepoints: cudaMalloc devBasePointX error!");
 		return err;
 	}
 
 	err = cudaMalloc(&_devBasePointY, sizeof(unsigned int) * count * 8);
 	if(err) {
+		printf("cudadevicekeys: initializebasepoints: cudaMalloc devBasePoontX error!");
 		return err;
 	}
 
@@ -155,6 +158,7 @@ cudaError_t CudaDeviceKeys::initializeBasePoints()
 	delete[] tmpX;
 
 	if(err) {
+		printf("cudaDeviceKeys initializeBasePoints: cudaMemcpy devBasePointX error!");
 		delete[] tmpY;
 		return err;
 	}
@@ -163,6 +167,9 @@ cudaError_t CudaDeviceKeys::initializeBasePoints()
 
 	delete[] tmpY;
 
+	if(err) {
+		printf("cudaDdviceKeys initializebasepoints: cudaMemcpy devBasePointY error!");
+	}
 	return err;
 }
 
@@ -172,34 +179,41 @@ cudaError_t CudaDeviceKeys::initializePublicKeys(size_t count)
 	// Allocate X array
 	cudaError_t err = cudaMalloc(&_devX, sizeof(unsigned int) * count * 8);
 	if(err) {
+		printf("cudaDeviceKeys initializePublicKeys: cudaMalloc devX error!");
 		return err;
 	}
 
 	// Clear X array
 	err = cudaMemset(_devX, -1, sizeof(unsigned int) * count * 8);
 	if(err) {
+		printf("cudaDeviceKeys initializepublickeys: cudaMemset devX error!");
 		return err;
 	}
 
 	// Allocate Y array
 	err = cudaMalloc(&_devY, sizeof(unsigned int) * count * 8);
 	if(err) {
+		printf("cudaDeviceKeys initializepublickeys: cudaMalloc devY error!");
 		return err;
 	}
 
 	// Clear Y array
 	err = cudaMemset(_devY, -1, sizeof(unsigned int) * count * 8);
 	if(err) {
+		printf("cudaDeviceKeys initializepublickeys: cudaMemset devY error!");
 		return err;
 	}
 
 	err = cudaMemcpyToSymbol(_xPtr, &_devX, sizeof(unsigned int *));
 	if(err) {
+		printf("cudaDeviceKeys initializepublicleys: cudaMemcpyToStmbol xPtr devX error!");
 		return err;
 	}
 
 	err = cudaMemcpyToSymbol(_yPtr, &_devY, sizeof(unsigned int *));
-	
+	if(err) {
+		printf("cudaDeviceKeys initializepublickeys: cudaMemcpyToSymbol yPtr devY error!");
+	}
 	return err;
 }
 
@@ -226,6 +240,7 @@ cudaError_t CudaDeviceKeys::init(int blocks, int threads, int pointsPerThread, c
 	// Allocate private keys on device
 	err = cudaMalloc(&_devPrivate, sizeof(unsigned int) * count * 8);
 	if(err) {
+		printf("cudaDeviceKeys::init: cudaMalloc devPrivate error!");
 		return err;
 	}
 
@@ -233,6 +248,7 @@ cudaError_t CudaDeviceKeys::init(int blocks, int threads, int pointsPerThread, c
 	// Clear private keys
 	err = cudaMemset(_devPrivate, 0, sizeof(unsigned int) * count * 8);
 	if(err) {
+		printf("cudaDeviceKeys::init: cudaMemset devPrivste error!");
 		return err;
 	}
 
@@ -261,6 +277,7 @@ cudaError_t CudaDeviceKeys::init(int blocks, int threads, int pointsPerThread, c
 	delete[] tmp;
 
 	if(err) {
+		printf("cudaDeviceKeys::init: cudaMemxpy devPrivate error!");
 		return err;
 	}
 
@@ -297,6 +314,10 @@ cudaError_t CudaDeviceKeys::doStep()
     cudaError_t err = cudaDeviceSynchronize();
 	fflush(stdout);
 	_step++;
+	if (err) {
+		printf("cudaDeviceKeys doStep: cudaDeviceSynchronize error!");
+		return err;
+	}
 	return err;
 }
 

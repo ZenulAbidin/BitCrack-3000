@@ -49,11 +49,13 @@ cudaError_t allocateChainBuf(unsigned int count)
     cudaError_t err = cudaMalloc(&_chainBufferPtr, count * sizeof(unsigned int) * 8);
 
     if(err) {
+	printf("allocateChainBuf: Allocate chainbufferptr error!");
         return err;
     }
 
     err = cudaMemcpyToSymbol(_CHAIN, &_chainBufferPtr, sizeof(unsigned int *));
     if(err) {
+	printf("allocateChainBuf: cudaMemcpyToSymbol chainbifferptr error!");
         cudaFree(_chainBufferPtr);
     }
 
@@ -81,10 +83,16 @@ cudaError_t setIncrementorPoint(const secp256k1::uint256 &x, const secp256k1::ui
 
     cudaError_t err = cudaMemcpyToSymbol(_INC_X, xWords, sizeof(unsigned int) * 8);
     if(err) {
+	printf("setIncrememtorPoint: cudaMemcpyToSymbol inc_x error!");
         return err;
     }
 
-    return cudaMemcpyToSymbol(_INC_Y, yWords, sizeof(unsigned int) * 8);
+    err = cudaMemcpyToSymbol(_INC_Y, yWords, sizeof(unsigned int) * 8);
+    if (err) {
+	printf("setIncrementorPoint: cudaMemxpyToSymbol inc_y error!");
+	return err;
+    }
+    return err;
 }
 
 
@@ -229,7 +237,6 @@ __device__ void doIterationWithDouble(int pointsPerThread, int compression)
                 setResultFound(i, true, x, y, digest);
             }
         }
-
         beginBatchAddWithDouble(_INC_X, _INC_Y, xPtr, chain, i, i, inverse);
     }
 

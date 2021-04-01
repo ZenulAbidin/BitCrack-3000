@@ -11,20 +11,54 @@ LIBS+=-L$(LIBDIR)
 # C++ options
 CXX=g++
 CXXFLAGS=-O2 -std=c++11 -w
+ifdef debug
+CXXFLAGS=-g
+endif
+
+TARGETS=dir_addressutil dir_cmdparse dir_cryptoutil dir_keyfinderlib dir_keyfinder dir_secp256k1lib dir_util dir_logger dir_addrgen
+
+ifeq ($(BUILD_CUDA),1)
+	TARGETS:=${TARGETS} dir_cudaKeySearchDevice dir_cudautil
+endif
+
+ifeq ($(BUILD_OPENCL),1)
+	TARGETS:=${TARGETS} dir_embedcl dir_clKeySearchDevice dir_clutil dir_clunittest
+endif
 
 # CUDA variables
-COMPUTE_CAP=30
+all:	driverquery ${TARGETS}
+
+ifeq ($(BUILD_CUDA), 1)
+ifndef COMPUTE_CAP
+driverquery:
+	. ./detect_cuda.sh
+COMPUTE_CAP=$(shell cat cuda_version.txt)
+else
+driverquery:
+	@echo "Compiling against manually selected CUDA version ${COMPUTE_CAP}"
+endif
+else
+driverquery:
+endif
+
 NVCC=nvcc
-NVCCFLAGS=-std=c++11 -arch=sm_${COMPUTE_CAP} -gencode=arch=compute_${COMPUTE_CAP},code=sm_${COMPUTE_CAP} -Xptxas="-v" -Xcompiler "${CXXFLAGS}"
+ifdef debug
+NVCCFLAGS+= -g -G
+endif
 CUDA_HOME=/usr/local/cuda
 CUDA_LIB=${CUDA_HOME}/lib64
 CUDA_INCLUDE=${CUDA_HOME}/include
 CUDA_MATH=$(CUR_DIR)/cudaMath
+NVCCFLAGS=-std=c++11 --ptxas-options="-v --opt-level 3" -Xcicc -O0 --compile --compiler-options -O2 -gencode=arch=compute_${COMPUTE_CAP},code=sm_${COMPUTE_CAP}
 
 # OpenCL variables
 OPENCL_LIB=${CUDA_LIB}
 OPENCL_INCLUDE=${CUDA_INCLUDE}
 OPENCL_VERSION=110
+
+ifeq ($(BUILD_OPENCL),1)
+	CXXFLAGS:=${CXXFLAGS} -DCL_TARGET_OPENCL_VERSION=${OPENCL_VERSION}
+endif
 
 export INCLUDE
 export LIBDIR
@@ -42,18 +76,6 @@ export OPENCL_INCLUDE
 export BUILD_OPENCL
 export BUILD_CUDA
 
-TARGETS=dir_addressutil dir_cmdparse dir_cryptoutil dir_keyfinderlib dir_keyfinder dir_secp256k1lib dir_util dir_logger dir_addrgen
-
-ifeq ($(BUILD_CUDA),1)
-	TARGETS:=${TARGETS} dir_cudaKeySearchDevice dir_cudautil
-endif
-
-ifeq ($(BUILD_OPENCL),1)
-	TARGETS:=${TARGETS} dir_embedcl dir_clKeySearchDevice dir_clutil dir_clunittest
-	CXXFLAGS:=${CXXFLAGS} -DCL_TARGET_OPENCL_VERSION=${OPENCL_VERSION}
-endif
-
-all:	${TARGETS}
 
 dir_cudaKeySearchDevice: dir_keyfinderlib dir_cudautil dir_logger
 	make --directory CudaKeySearchDevice
@@ -130,3 +152,6 @@ clean:
 	make --directory CLUnitTests clean
 	rm -rf ${LIBDIR}
 	rm -rf ${BINDIR}
+	@rm -f deviceQuery/*.o
+	@rm -f cuda_version.txt
+	@rm -f deviceQuery/cuda_build_log.txt

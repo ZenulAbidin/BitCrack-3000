@@ -24,11 +24,15 @@ static cudaError_t setListPtr(void *ptr, unsigned int *numResults)
 	cudaError_t err = cudaMemcpyToSymbol(_LIST_BUF, &ptr, sizeof(void *));
 
 	if(err) {
+		printf("cudaatomiclist setListPtr: cudaMemcpyToSymbol list_buf error!");
 		return err;
 	}
 
 	err = cudaMemcpyToSymbol(_LIST_SIZE, &numResults, sizeof(unsigned int *));
-
+        if (err) {
+		printf("cudaatomiclist setListPtr: cudaMemcpyToSymbol list_size error!");
+		return err;
+	}
 	return err;
 }
 
@@ -41,6 +45,7 @@ cudaError_t CudaAtomicList::init(unsigned int itemSize, unsigned int maxItems)
 	_countHostPtr = NULL;
 	cudaError_t err = cudaHostAlloc(&_countHostPtr, sizeof(unsigned int), cudaHostAllocMapped);
 	if(err) {
+		printf("cudaAtomicList::init: cudaHostAlloc countHostPtr error!");
 		goto end;
 	}
 
@@ -48,6 +53,7 @@ cudaError_t CudaAtomicList::init(unsigned int itemSize, unsigned int maxItems)
 	_countDevPtr = NULL;
 	err = cudaHostGetDevicePointer(&_countDevPtr, _countHostPtr, 0);
 	if(err) {
+		printf("cudaAtomicList::init: cudaHostGetDevicePointer countDevicePte error!");
 		goto end;
 	}
 	*_countHostPtr = 0;
@@ -56,6 +62,7 @@ cudaError_t CudaAtomicList::init(unsigned int itemSize, unsigned int maxItems)
 	_hostPtr = NULL;
 	err = cudaHostAlloc(&_hostPtr, itemSize * maxItems, cudaHostAllocMapped);
 	if(err) {
+		printf("cudaAtomicList::init: cudaHostAlloc hostPtr error!");
 		goto end;
 	}
 
@@ -64,6 +71,7 @@ cudaError_t CudaAtomicList::init(unsigned int itemSize, unsigned int maxItems)
 	err = cudaHostGetDevicePointer(&_devPtr, _hostPtr, 0);
 
 	if(err) {
+		printf("cudaAtomicList::init: cudaHostGetDevicePointer devPtr error!");
 		goto end;
 	}
 

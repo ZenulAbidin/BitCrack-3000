@@ -3,6 +3,12 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Vim swap files
+.*.swp
+
+# Binaries
+*.bin
+
 # These files are auto-generated during building and do
 # not need to be checked in
 CLKeySearchDevice/bitcrack.cl
