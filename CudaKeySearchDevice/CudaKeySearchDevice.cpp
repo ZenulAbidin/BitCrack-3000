@@ -347,5 +347,11 @@ secp256k1::uint256 CudaKeySearchDevice::getNextKey()
 {
     uint64_t totalPoints = (uint64_t)_pointsPerThread * _threads * _blocks;
 
-    return _startExponent + secp256k1::uint256(totalPoints) * _iterations * _stride;
+    secp256k1::uint256 next_key = _startExponent + secp256k1::uint256(totalPoints) * _iterations * _stride;
+
+    if (_randomMode && next_key.cmp(_end))
+    {
+        next_key = secp256k1::getRandomRange(_startExponent, _end);
+    }
+    return next_key;
 }
